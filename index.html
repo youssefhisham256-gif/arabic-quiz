@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار اللغة العربية | أ/ يوسف البارع</title>
+    
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0a2540; /* أزرق غامق فخم */
+            --primary-light: #153b61;
+            --secondary: #ffffff; /* أبيض */
+            --accent: #ffd700; /* أصفر مميز */
+            --accent-hover: #e6c200;
+            --text-dark: #2c3e50;
+            --text-light: #f8f9fa;
+            --bg-color: #f0f4f8;
+            --success: #28a745;
+            --success-bg: #d4edda;
+            --error: #dc3545;
+            --error-bg: #f8d7da;
+            --shadow: 0 8px 24px rgba(10, 37, 64, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            background-color: var(--primary);
+            color: var(--secondary);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            border-bottom: 4px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .teacher-brand {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Containers */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        /* Welcome Screen */
+        .welcome-card {
+            background: var(--secondary);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-top: 5px solid var(--primary);
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .welcome-msg {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-right: 4px solid var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background-color: var(--primary);
+            color: var(--secondary);
+            margin-top: 15px;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Quiz Screen */
+        .progress-container {
+            margin-bottom: 25px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background-color: #e1e8ed;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 10px;
+        }
+
+        .question-card {
+            background: var(--secondary);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-top: 5px solid var(--primary);
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 18px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: right;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--accent);
+            background-color: rgba(255, 215, 0, 0.05);
+            transform: translateX(-5px);
+        }
+
+        .option-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--success-bg);
+            border-color: var(--success);
+            color: #155724;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--error-bg);
+            border-color: var(--error);
+            color: #721c24;
+            animation: shake 0.4s;
+        }
+
+        /* Feedback Area */
+        .feedback-area {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.6;
+            animation: fadeIn 0.4s;
+        }
+
+        .feedback-area.correct {
+            display: block;
+            background-color: var(--success-bg);
+            border-right: 5px solid var(--success);
+            color: #155724;
+        }
+
+        .feedback-area.incorrect {
+            display: block;
+            background-color: var(--error-bg);
+            border-right: 5px solid var(--error);
+            color: #721c24;
+        }
+
+        .next-btn-container {
+            margin-top: 25px;
+            display: none;
+        }
+
+        /* Result Screen */
+        .result-card {
+            background: var(--secondary);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-top: 5px solid var(--primary);
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0%, #e1e8ed 0%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            position: relative;
+        }
+
+        .score-circle::after {
+            content: "";
+            width: 120px;
+            height: 120px;
+            background: var(--secondary);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .score-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .stat-box i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-box.success i { color: var(--success); }
+        .stat-box.danger i { color: var(--error); }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Review Screen */
+        .review-item {
+            background: var(--secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-right: 5px solid #ccc;
+        }
+
+        .review-item.correct { border-right-color: var(--success); }
+        .review-item.incorrect { border-right-color: var(--error); }
+
+        .review-q {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .review-ans {
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .review-ans span { font-weight: 700; }
+        .review-ans.user-correct { color: var(--success); }
+        .review-ans.user-wrong { color: var(--error); }
+        .review-ans.real-correct { color: var(--primary); background: rgba(255, 215, 0, 0.2); }
+
+        /* Media Queries */
+        @media (max-width: 600px) {
+            .welcome-title { font-size: 1.5rem; }
+            .question-text { font-size: 1.2rem; }
+            .option-btn { padding: 15px; font-size: 1rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="teacher-brand">
+            <i class="fa-solid fa-graduation-cap"></i>
+            أ/ يوسف البارع
+        </div>
+        <div>
+            <span style="font-size: 0.9rem; font-weight: 600;">الصف الثاني الإعدادي</span>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Welcome Screen -->
+        <section id="welcome-screen" class="screen active">
+            <div class="welcome-card">
+                <i class="fa-solid fa-trophy welcome-icon"></i>
+                <h1 class="welcome-title">أهلاً وسهلاً يا بطل!</h1>
+                <div class="welcome-msg">
+                    مستر <strong>أ/يوسف البارع</strong> مستني يشوف شطارتك النهارده.<br>
+                    الاختبار ده مش مجرد امتحان، ده تحدي لمهاراتك في النحو واللغة العربية.<br>
+                    ركز، اقرأ كل سؤال بهدوء، وخليك واثق في نفسك...<br>
+                    يلا نبدأ التحدي ونشوف هتجيب كام! 🔥
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentName">اسم الطالب (مطلوب)</label>
+                    <input type="text" id="studentName" class="form-control" placeholder="اكتب اسمك الثلاثي هنا..." required>
+                </div>
+                <div class="form-group">
+                    <label for="studentPhone">رقم الهاتف (اختياري)</label>
+                    <input type="tel" id="studentPhone" class="form-control" placeholder="اكتب رقم هاتفك...">
+                </div>
+
+                <button class="btn btn-primary" onclick="startQuiz()">🚀 ابدأ التحدي</button>
+            </div>
+        </section>
+
+        <!-- Quiz Screen -->
+        <section id="quiz-screen" class="screen">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span id="question-counter">السؤال 1 من 100</span>
+                    <span id="score-counter">الدرجة: 0</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="question-card">
+                <h2 class="question-text" id="question-text">نص السؤال يظهر هنا...</h2>
+                <div class="options-grid" id="options-grid">
+                    <!-- Options injected via JS -->
+                </div>
+
+                <div id="feedback-area" class="feedback-area">
+                    <!-- Feedback injected via JS -->
+                </div>
+
+                <div class="next-btn-container" id="next-btn-container">
+                    <button class="btn btn-primary" onclick="nextQuestion()">➡️ السؤال التالي</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Result Screen -->
+        <section id="result-screen" class="screen">
+            <div class="result-card">
+                <h1 class="welcome-title">🎉 مبروك يا <span id="res-student-name">بطل</span>!</h1>
+                <p style="font-size: 1.2rem; margin-bottom: 20px; color: var(--primary); font-weight: 700;" id="res-message"></p>
+                
+                <div class="score-circle" id="score-circle">
+                    <span class="score-text" id="score-percentage">0%</span>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <i class="fa-solid fa-star" style="color: var(--accent)"></i>
+                        <div class="stat-title">الدرجة النهائية</div>
+                        <div class="stat-value"><span id="res-score">0</span> / <span id="res-total">0</span></div>
+                    </div>
+                    <div class="stat-box success">
+                        <i class="fa-solid fa-check-circle"></i>
+                        <div class="stat-title">إجابات صحيحة</div>
+                        <div class="stat-value" id="res-correct">0</div>
+                    </div>
+                    <div class="stat-box danger">
+                        <i class="fa-solid fa-times-circle"></i>
+                        <div class="stat-title">إجابات خاطئة</div>
+                        <div class="stat-value" id="res-wrong">0</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="shareResult()"><i class="fa-solid fa-share-nodes"></i> مشاركة النتيجة</button>
+                <button class="btn btn-secondary" onclick="showReview()"><i class="fa-solid fa-list-check"></i> مراجعة الإجابات</button>
+                <button class="btn btn-secondary" style="background-color: #6c757d;" onclick="restartQuiz()"><i class="fa-solid fa-rotate-right"></i> إعادة الاختبار</button>
+            </div>
+        </section>
+
+        <!-- Review Screen -->
+        <section id="review-screen" class="screen">
+            <div class="welcome-card" style="padding: 20px;">
+                <h2 class="welcome-title" style="margin-bottom: 20px;">📋 مراجعة الإجابات</h2>
+                <div id="review-list" style="text-align: right;">
+                    <!-- Review items injected via JS -->
+                </div>
+                <button class="btn btn-primary" style="margin-top: 20px;" onclick="backToResult()">⬅️ العودة للنتيجة</button>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- بنك الأسئلة ---
+        // تم إدخال جميع الأسئلة المرسلة (91 سؤالاً) بالترتيب والنص الدقيق
+        const questions = [
+            { q: "أيٌّ من الأفعال الآتية يُعد معرباً في أصله؟", options: ["(أ) الماضي", "(ب) الأمر", "(ج) المضارع", "(د) جميع ما سبق"], ans: 2 },
+            { q: "الفعل الماضي يكون دائماً:", options: ["(أ) معرباً مرفوعاً", "(ب) مبنياً", "(ج) معرباً مجزوماً", "(د) معرباً منصوباً"], ans: 1 },
+            { q: "فعل الأمر يكون دائماً:", options: ["(أ) معرباً", "(ب) مبنياً", "(ج) مرفوعاً", "(د) منصوباً"], ans: 1 },
+            { q: "ما يبنى عليه فعل الأمر الصحيح الآخر الذي لم يتصل به شيء هو:", options: ["(أ) الفتح", "(ب) الضم", "(ج) السكون", "(د) حذف النون"], ans: 2 },
+            { q: "الفعل الماضي \"كتبَ\" مبني على:", options: ["(أ) السكون", "(ب) الفتح", "(ج) الضم", "(د) حذف حرف العلة"], ans: 1 },
+            { q: "يبنى الفعل الماضي على الضم إذا اتصلت به:", options: ["(أ) تاء الفاعل", "(ب) نون النسوة", "(ج) واو الجماعة", "(د) ألف الاثنين"], ans: 2 },
+            { q: "يكون الفعل المضارع مبنياً إذا اتصلت به:", options: ["(أ) ألف الاثنين", "(ب) نون النسوة", "(ج) تاء التأنيث", "(د) ياء المخاطبة"], ans: 1 },
+            { q: "الفعل المضارع يبنى على السكون إذا اتصلت به:", options: ["(أ) نون التوكيد", "(ب) نون النسوة", "(ج) واو الجماعة", "(د) نون التوكيد الخفيفة"], ans: 1 },
+            { q: "الفعل المضارع يبنى على الفتح إذا اتصلت به:", options: ["(أ) نون النسوة", "(ب) نون التوكيد", "(ج) نا المفعولين", "(د) ألف الاثنين"], ans: 1 },
+            { q: "علامة بناء فعل الأمر \"ادعُ\" هي:", options: ["(أ) السكون", "(ب) الضمة", "(ج) حذف حرف العلة", "(د) حذف النون"], ans: 2 },
+            { q: "الفعل \"كتبُوا\" فعل ماضٍ مبني على:", options: ["(أ) الفتح", "(ب) السكون", "(ج) الضم", "(د) ثبوت النون"], ans: 2 },
+            { q: "الفعل \"كتبْتُ\" فعل ماضٍ مبني على:", options: ["(أ) الضم", "(ب) الفتح", "(ج) السكون", "(د) حذف النون"], ans: 2 },
+            { q: "الفعل المضارع \"يقرأُ\" في (الولدُ يقرأُ الدرسَ) هو:", options: ["(أ) مبني", "(ب) معرب مرفوع", "(ج) مبني على الفتح", "(د) مجزوم"], ans: 1 },
+            { q: "عند دخول \"لن\" على \"يجتهدَ\" فإنه يكون:", options: ["(أ) مبنياً", "(ب) معرباً منصوباً", "(ج) مبنياً على السكون", "(د) مجزوماً"], ans: 1 },
+            { q: "فعل الأمر \"افهمَا\" مبني على:", options: ["(أ) السكون", "(ب) الفتح", "(ج) حذف النون", "(د) حذف حرف العلة"], ans: 2 },
+            { q: "الفعل الماضي \"جلسَتْ فاطمةُ\" مبني على:", options: ["(أ) السكون", "(ب) الفتح", "(ج) الضم", "(د) القطع"], ans: 1 },
+            { q: "الفعل المضارع \"يعلمون\" هو فعل:", options: ["(أ) مبني", "(ب) معرب مرفوع بثبوت النون", "(ج) مبني على الواو", "(د) منصوب"], ans: 1 },
+            { q: "فعل الأمر من \"قال\" هو \"قُلْ\"، وهو مبني على:", options: ["(أ) حذف العلة", "(ب) السكون", "(ج) الفتح", "(د) الضم"], ans: 1 },
+            { q: "الفعل الماضي \"خرجْنا\" مبني على:", options: ["(أ) السكون", "(ب) الفتح", "(ج) الضم", "(د) حذف النون"], ans: 0 },
+            { q: "إذا اتصل الفعل الماضي بألف الاثنين يبنى على:", options: ["(أ) السكون", "(ب) الفتح", "(ج) الضم", "(د) حذف النون"], ans: 1 },
+            { q: "الأفعال المبنية دائماً هي:", options: ["(أ) الماضي والمضارع", "(ب) المضارع والأمر", "(ج) الماضي والأمر", "(د) الأفعال الخمسة"], ans: 2 },
+            { q: "الفعل \"تكتبين\" فعل مضارع مرفوع بـ:", options: ["(أ) الضمة", "(ب) ثبوت النون", "(ج) الياء", "(د) ثبوت الياء"], ans: 1 },
+            { q: "في (الطالباتُ يفهَمْنَ الدرسَ)، الفعل \"يفهمن\":", options: ["(أ) معرب", "(ب) مبني على السكون", "(ج) مبني على الفتح", "(د) مجزوم"], ans: 1 },
+            { q: "الفعل \"اصبرَنْ يا محمدُ\" فعل أمر مبني على:", options: ["(أ) السكون", "(ب) الفتح", "(ج) حذف النون", "(د) الضم"], ans: 1 },
+            { q: "علامة جزم \"لم يسعَ\" هي:", options: ["(أ) السكون", "(ب) الفتحة", "(ج) حذف حرف العلة", "(د) الضمة"], ans: 2 },
+            { q: "التاء في \"كتبْتَ\" تجعل الفعل الماضي مبنياً على:", options: ["(أ) الفتح", "(ب) السكون", "(ج) الضم", "(د) الكسر"], ans: 1 },
+            { q: "عند جزم الفعل المضارع الصحيح الآخر تكون علامة إعرابه:", options: ["(أ) مبني", "(ب) السكون", "(ج) حذف العلة", "(د) الفتحة"], ans: 1 },
+            { q: "فعل الأمر \"اسعيَا\" مبني على:", options: ["(أ) حذف العلة", "(ب) حذف النون", "(ج) السكون", "(د) الفتح"], ans: 1 },
+            { q: "أي الأفعال التالية مبني على الفتح؟", options: ["(أ) يكتبون", "(ب) كتبُوا", "(ج) كتبَ", "(د) اكتُبْ"], ans: 2 },
+            { q: "\"لم يكتبوا\" فعل مضارع مجزوم بـ:", options: ["(أ) السكون", "(ب) حذف النون", "(ج) حذف العلة", "(د) الضمة"], ans: 1 },
+            { q: "أي الأفعال التالية معرب؟", options: ["(أ) اسعَ", "(ب) سعى", "(ج) يسعى", "(د) اسعينَّ"], ans: 2 },
+            { q: "يبنى فعل الأمر على ما يُجزم به:", options: ["(أ) ماضيه", "(ب) مضارعه", "(ج) مصدره", "(د) اسم الفاعل"], ans: 1 },
+            { q: "\"أكرمَنا المعلمُ\" (أكرمَ) مبني على:", options: ["(أ) السكون", "(ب) الفتح", "(ج) الضم", "(د) حذف النون"], ans: 1 },
+            { q: "\"أكرمْنا المعلمَ\" (أكرمْ) مبني على:", options: ["(أ) الفتح", "(ب) السكون", "(ج) الضم", "(د) حذف النون"], ans: 1 },
+            { q: "الفعل المضارع يُعرب بعلامات مقدرة إذا كان:", options: ["(أ) صحيح", "(ب) معتل", "(ج) أفعال خمسة", "(د) متصلاً بنون النسوة"], ans: 1 },
+            { q: "(واللهِ لَأجتهدَنَّ) الفعل هو:", options: ["(أ) معرب", "(ب) مبني على الفتح", "(ج) منصوب", "(د) مبني على السكون"], ans: 1 },
+            { q: "(المعلماتُ يُشَارِكْنَ) الفعل \"يشاركن\":", options: ["(أ) معرب", "(ب) مبني على السكون", "(ج) مبني على الفتح", "(د) مجزوم"], ans: 1 },
+            { q: "\"اسعَيْنَ يا فتيات\":", options: ["(أ) أمر مبني على الفتح", "(ب) مبني على السكون", "(ج) حذف النون", "(د) حذف العلة"], ans: 1 },
+            { q: "\"يا محمد، اسعَيَنَّ\":", options: ["(أ) مبني على الفتح", "(ب) مبني على السكون", "(ج) حذف العلة", "(د) حذف النون"], ans: 0 },
+            { q: "الفعل الماضي \"رمَى\" مبني على:", options: ["(أ) الفتح الظاهر", "(ب) الفتح المقدر", "(ج) السكون المقدر", "(د) حذف العلة"], ans: 1 },
+            { q: "الفعل الماضي \"سَعَوْا\" مبني على الضم المقدر على:", options: ["(أ) الألف", "(ب) الواو", "(ج) العين", "(د) الفتحة"], ans: 0 },
+            { q: "عند توكيد \"ادعُ\" بنون التوكيد يصبح:", options: ["(أ) ادعُنَّ", "(ب) ادعُوَنَّ", "(ج) ادعَيَنَّ", "(د) ادعَنْ"], ans: 1 },
+            { q: "(لا تتكاسلَنَّ يا طالبُ):", options: ["(أ) معرب", "(ب) مبني على الفتح", "(ج) مبني على السكون", "(د) معرب منصوب"], ans: 1 },
+            { q: "(الفتياتُ لنْ يهملْنَ):", options: ["(أ) معرب", "(ب) مبني على السكون في محل نصب", "(ج) منصوب", "(د) مبني على الفتح"], ans: 1 },
+            { q: "علامة بناء فعل الأمر \"ادعي\" هي:", options: ["(أ) السكون", "(ب) حذف العلة", "(ج) حذف النون", "(د) الكسرة"], ans: 2 },
+            { q: "الجملة التي تحوي مضارعاً مبنياً:", options: ["(أ) الطلاب يكتبون", "(ب) لم يكتب", "(ج) هل تكتبَنَّ", "(د) إن تدعُ"], ans: 2 },
+            { q: "\"دعا\" و\"ادعُ\":", options: ["(أ) كلاهما سكون", "(ب) الأول فتح مقدر والثاني حذف علة", "(ج) معرب", "(د) الأول معرب"], ans: 1 },
+            { q: "نون النسوة في \"كتبْن\" تعرب:", options: ["(أ) حرف", "(ب) ضمير في محل رفع", "(ج) علامة تأنيث", "(د) مفعول"], ans: 1 },
+            { q: "نون التوكيد المباشرة:", options: ["(أ) ضمير", "(ب) حرف لا محل له", "(ج) اسم", "(د) علامة إعراب"], ans: 1 },
+            { q: "\"المؤمنُ يرضى\":", options: ["(أ) مبني على الفتح", "(ب) معرب بضمة مقدرة", "(ج) ضمة ثقل", "(د) مبني سكون"], ans: 1 },
+            { q: "\"الداعي يدعو\":", options: ["(أ) تعذر", "(ب) ثقل", "(ج) اشتغال", "(د) عدم صحة"], ans: 1 },
+            { q: "\"اهتديْتُ\" مبني على السكون لاتصاله بـ:", options: ["(أ) تاء الفاعل", "(ب) نون النسوة", "(ج) نا الفاعلين", "(د) تاء التأنيث"], ans: 0 },
+            { q: "أي الأفعال التالية مبني على حذف النون؟", options: ["(أ) ادعُ", "(ب) اسعَ", "(ج) اكتبوا", "(د) اكتبْ"], ans: 2 },
+            { q: "\"أنتِ تقضين\":", options: ["(أ) مبني", "(ب) معرب مرفوع بثبوت النون", "(ج) مبني على الفتح", "(د) معرب مرفوع"], ans: 1 },
+            { q: "\"النساء تقضين\":", options: ["(أ) معرب", "(ب) مبني على السكون", "(ج) مبني على الفتح", "(د) مجزوم"], ans: 1 },
+            { q: "الفعل \"ردَّ\" مبني على:", options: ["(أ) السكون", "(ب) الفتح الظاهر", "(ج) الضم", "(د) الفتح المقدر"], ans: 1 },
+            { q: "\"ردَّ\" مع تاء الفاعل:", options: ["(أ) ردْتُ", "(ب) رددْتُ", "(ج) رادَدْتُ", "(د) رادْتُ"], ans: 1 },
+            { q: "\"قُمنَ\" فعل أمر مبني على:", options: ["(أ) الفتح", "(ب) السكون", "(ج) حذف النون", "(د) حذف العلة"], ans: 1 },
+            { q: "المضارع يعرب بعلامة فرعية في:", options: ["(أ) رفع الصحيح", "(ب) ثبوت النون", "(ج) نصب بالفتحة", "(د) جزم بالسكون"], ans: 1 },
+            { q: "فعل الأمر \"سِرْ\" علامة بنائه:", options: ["(أ) حذف العلة", "(ب) السكون", "(ج) الفتح", "(د) حذف النون"], ans: 1 },
+            { q: "\"نامُوا\" الواو:", options: ["(أ) حرف", "(ب) ضمير رفع", "(ج) جزء من الفعل", "(د) مفعول"], ans: 1 },
+            { q: "(لتستمعَنَّ) مضارع:", options: ["(أ) مبني على الفتح", "(ب) مبني على السكون", "(ج) معرب", "(د) مجزوم"], ans: 0 },
+            { q: "نصب المضارع \"لن يرضى\":", options: ["(أ) فتحة ظاهرة", "(ب) فتحة مقدرة", "(ج) حذف العلة", "(د) سكون"], ans: 1 },
+            { q: "نصب المضارع \"لن يدعوَ\":", options: ["(أ) فتحة ظاهرة", "(ب) فتحة مقدرة", "(ج) حذف العلة", "(د) ثبوت الواو"], ans: 0 },
+            { q: "(علمَك) الماضي يبنى على:", options: ["(أ) السكون", "(ب) الفتح", "(ج) الضم", "(د) الكسر"], ans: 1 },
+            { q: "\"المؤمنات يرضين\":", options: ["(أ) معرب مرفوع", "(ب) مبني على السكون", "(ج) مبني على الفتح", "(د) معرب بضمة مقدرة"], ans: 1 },
+            { q: "جزم الأفعال الخمسة يكون بـ:", options: ["(أ) السكون", "(ب) حذف النون", "(ج) حذف العلة", "(د) الضمة"], ans: 1 },
+            { q: "\"خُذْ\" مبني على:", options: ["(أ) حذف الهمزة", "(ب) السكون", "(ج) حذف النون", "(د) الفتح"], ans: 1 },
+            { q: "الأفعال التالية مبنية ما عدا:", options: ["(أ) استغفَرَ", "(ب) استغْفِرْ", "(ج) يسْتَغْفِرُ", "(د) اسْتَغْفَرُوا"], ans: 2 },
+            { q: "\"بَنَوْا\" علامة بنائه:", options: ["(أ) ضم ظاهر", "(ب) ضم مقدر على الألف", "(ج) فتح مقدر", "(د) حذف النون"], ans: 1 },
+            { q: "(هل تكتبُنَّ يا طلاب؟):", options: ["(أ) مبني فتح", "(ب) معرب مرفوع ثبوت النون المحذوفة", "(ج) مبني ضم", "(د) معرب مجزوم"], ans: 1 },
+            { q: "(والله لَتُذَاكِرُنَّ):", options: ["(أ) مبني فتح", "(ب) معرب", "(ج) مبني سكون", "(د) مبني ضم"], ans: 1 },
+            { q: "(يا هند، هل تسعَيِنَّ):", options: ["(أ) مبني فتح", "(ب) معرب مرفوع بنون محذوفة", "(ج) مبني كسر", "(د) مبني سكون"], ans: 1 },
+            { q: "\"تكتبين\" و \"تكتبن\":", options: ["(أ) أول مبني ثاني معرب", "(ب) أول معرب ثاني مبني", "(ج) كلاهما معرب", "(د) كلاهما مبني"], ans: 1 },
+            { q: "\"لا تتبعانِّ\":", options: ["(أ) مبني فتح", "(ب) معرب مرفوع بنون محذوفة", "(ج) مجزوم", "(د) مبني سكون"], ans: 1 },
+            { q: "أمر \"وقى\":", options: ["(أ) اوقِ", "(ب) قِ", "(ج) قِهْ", "(د) ب و ج"], ans: 3 },
+            { q: "علامة \"قِ\":", options: ["(أ) سكون", "(ب) حذف نون", "(ج) حذف علة", "(د) فتح"], ans: 2 },
+            { q: "\"يدعون\" (للنساء) و (للرجال):", options: ["(أ) كلاهما معرب", "(ب) أول مبني ثاني معرب", "(ج) أول معرب ثاني مبني", "(د) كلاهما مبني"], ans: 1 },
+            { q: "وزن \"يدعون\" (نساء) و(رجال):", options: ["(أ) يفعلون-يفعلن", "(ب) يفعلن-يفعون", "(ج) يفعلن-يفعلون", "(د) يفعلون-يفعلون"], ans: 1 },
+            { q: "الواو في \"يدعون\" (نساء) و(رجال):", options: ["(أ) واو جماعة-واو جماعة", "(ب) لام فعل-واو جماعة", "(ج) واو جماعة-لام فعل", "(د) علامة رفع"], ans: 1 },
+            { q: "(لا ترضَيَنَّ) و (لا ترضَوُنَّ):", options: ["(أ) فتح-مجزوم", "(ب) كلاهما فتح", "(ج) معرب-مبني", "(د) كلاهما معرب"], ans: 0 },
+            { q: "أمر \"رأى\":", options: ["(أ) ارْأَ", "(ب) رَ", "(ج) رَهْ", "(د) ب و ج"], ans: 3 },
+            { q: "\"لتسعَينَّ\":", options: ["(أ) مبني فتح", "(ب) معرب مرفوع نون محذوفة", "(ج) معرب مجزوم حذف نون", "(د) مبني كسر"], ans: 2 },
+            { q: "\"سَرَوا\" علامة بنائه:", options: ["(أ) ضم ظاهر", "(ب) ضم مقدر على الألف", "(ج) فتح ظاهر", "(د) سكون مقدر"], ans: 1 },
+            { q: "\"اقْضِيَنَّ\" أمر مبني على:", options: ["(أ) حذف علة", "(ب) الفتح", "(ج) السكون", "(د) الكسر"], ans: 1 },
+            { q: "\"إنْ تبتسمْنَ\":", options: ["(أ) معرب مجزوم سكون", "(ب) مبني سكون محل جزم", "(ج) مبني فتح", "(د) معرب مجزوم حذف نون"], ans: 1 },
+            { q: "\"لا تقولُنَّ\":", options: ["(أ) مبني فتح", "(ب) معرب مجزوم حذف نون", "(ج) مبني ضم", "(د) معرب مجزوم سكون"], ans: 1 },
+            { q: "أمر \"اشترِ\" مع النسوة:", options: ["(أ) اشترين مبني سكون", "(ب) اشترون فتح", "(ج) اشترن حذف نون", "(د) اشترين فتح"], ans: 0 },
+            { q: "\"اقرأَنْ\":", options: ["(أ) سكون", "(ب) الفتح", "(ج) حذف نون", "(د) قطع"], ans: 1 },
+            { q: "النون في \"يقمن\" و \"ليقومَنَّ\":", options: ["(أ) ضمير-حرف توكيد", "(ب) حرف-ضمير", "(ج) كلاهما حرف", "(د) كلاهما ضمير"], ans: 0 },
+            { q: "\"ودَّ\" مع النسوة:", options: ["(أ) ودَّنَ", "(ب) وَدِدْنَ سكون", "(ج) ودِدْن فتح", "(د) وادَدْنَ"], ans: 1 },
+            { q: "\"ليرضَيَنَّ\" علامة الفتح:", options: ["(أ) ظاهرة", "(ب) مقدرة", "(ج) حذف علة", "(د) ثبوت ياء"], ans: 0 },
+            { q: "مضارع بضمة مقدرة للتعذر:", options: ["(أ) يرمي", "(ب) يدعو", "(ج) يسعى", "(د) يكتب"], ans: 2 },
+            { q: "\"من يهدِ\":", options: ["(أ) مبني حذف علة", "(ب) معرب مجزوم حذف علة", "(ج) مبني سكون", "(د) معرب منصوب"], ans: 1 },
+            { q: "\"لا تهملُنَّ\" (غير مباشرة):", options: ["(أ) معرب مجزوم حذف نون", "(ب) مبني فتح", "(ج) معرب مرفوع", "(د) مبني سكون"], ans: 0 },
+            { q: "\"يا فتيات لا تهملن\":", options: ["(أ) معرب مجزوم حذف نون", "(ب) مبني سكون", "(ج) مبني فتح", "(د) مجزوم سكون"], ans: 1 },
+            { q: "\"استعنْ\" مع الجماعة:", options: ["(أ) استعينوا سكون", "(ب) استعينوا حذف نون", "(ج) استعنوا حذف علة", "(د) معرب"], ans: 1 },
+            { q: "\"قالَا\" الألف:", options: ["(أ) علامة رفع", "(ب) ضمير فاعل", "(ج) حرف توكيد", "(د) حرف لا محل له"], ans: 1 },
+            { q: "\"لم يَرَ\":", options: ["(أ) مبني حذف علة", "(ب) معرب مجزوم حذف علة", "(ج) مبني فتح", "(د) معرب مجزوم سكون مقدر"], ans: 1 },
+            { q: "أمر مبني على السكون:", options: ["(أ) ادعُ", "(ب) اقضِ", "(ج) اتقِينَ", "(د) اتقُوا"], ans: 2 }
+        ];
+
+        // --- المتغيرات العامة ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = []; // لتخزين إجابات الطالب للمراجعة
+        let studentData = { name: '', phone: '' };
+
+        // رسائل التشجيع (الإجابة الصحيحة)
+        const successMessages = [
+            "🎉 تمام يا بطل! أنت كده شاطر جدًا 👏",
+            "🔥 مستر أ/يوسف البارع بيقولك: إجابة ممتازة يا فنان!",
+            "💪 رائع! استمر على نفس المستوى.",
+            "✅ إجابة دقيقة وعظيمة.. عاش يا بطل!"
+        ];
+
+        // رسائل التوجيه (الإجابة الخاطئة)
+        const errorMessages = [
+            "💡 مستر أ/يوسف البارع بيقولك: راجع وركز على الجزئية دي تاني 👀",
+            "🎯 مش مشكلة، المهم نتعلم من الخطأ، واصل يا بطل!",
+            "👀 ركز شوية.. مستر أ/يوسف البارع واثق إنك هتجيب اللي بعدها صح 💪",
+            "📚 التحدي لسه شغال! راجع القاعدة دي كويس وكمل."
+        ];
+
+        // --- الدوال الأساسية ---
+
+        function startQuiz() {
+            const nameInput = document.getElementById('studentName').value.trim();
+            const phoneInput = document.getElementById('studentPhone').value.trim();
+            
+            if(nameInput === "") {
+                alert("برجاء إدخال اسمك قبل بدء التحدي!");
+                return;
+            }
+
+            studentData.name = nameInput;
+            studentData.phone = phoneInput;
+
+            document.getElementById('welcome-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            // تحديث شريط التقدم والعداد
+            document.getElementById('question-counter').innerText = `السؤال ${currentQuestionIndex + 1} من ${questions.length}`;
+            document.getElementById('score-counter').innerText = `الدرجة: ${score}`;
+            const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // تفريغ العناصر
+            document.getElementById('question-text').innerText = q.q;
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+            
+            const feedbackArea = document.getElementById('feedback-area');
+            feedbackArea.className = 'feedback-area';
+            feedbackArea.innerHTML = '';
+            document.getElementById('next-btn-container').style.display = 'none';
+
+            // إنشاء الاختيارات
+            q.options.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span>${optText}</span> <i class="fa-regular fa-circle"></i>`;
+                btn.onclick = () => selectOption(index, btn);
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex, btnElement) {
+            const q = questions[currentQuestionIndex];
+            const isCorrect = (selectedIndex === q.ans);
+            const optionsGrid = document.getElementById('options-grid');
+            const buttons = optionsGrid.getElementsByTagName('button');
+
+            // حفظ إجابة الطالب
+            userAnswers.push({
+                question: q.q,
+                userChoiceIndex: selectedIndex,
+                correctChoiceIndex: q.ans,
+                options: q.options,
+                isCorrect: isCorrect
+            });
+
+            // إيقاف الضغط على باقي الأزرار
+            for (let btn of buttons) {
+                btn.classList.add('disabled');
+                btn.onclick = null;
+            }
+
+            const feedbackArea = document.getElementById('feedback-area');
+
+            if (isCorrect) {
+                score++;
+                btnElement.classList.add('correct');
+                btnElement.innerHTML = `<span>${q.options[selectedIndex]}</span> <i class="fa-solid fa-circle-check"></i>`;
+                
+                // تشغيل Confetti
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#ffd700', '#ffffff', '#0a2540', '#28a745']
+                });
+
+                // عرض رسالة نجاح
+                const randomMsg = successMessages[Math.floor(Math.random() * successMessages.length)];
+                feedbackArea.classList.add('correct');
+                feedbackArea.innerHTML = `<i class="fa-solid fa-face-smile"></i> ${randomMsg}`;
+            } else {
+                btnElement.classList.add('incorrect');
+                btnElement.innerHTML = `<span>${q.options[selectedIndex]}</span> <i class="fa-solid fa-circle-xmark"></i>`;
+                
+                // إبراز الإجابة الصحيحة
+                const correctBtn = buttons[q.ans];
+                correctBtn.classList.add('correct');
+                correctBtn.innerHTML = `<span>${q.options[q.ans]}</span> <i class="fa-solid fa-circle-check"></i>`;
+
+                // عرض رسالة خطأ
+                const randomMsg = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+                feedbackArea.classList.add('incorrect');
+                feedbackArea.innerHTML = `<i class="fa-solid fa-thumbs-down"></i> ${randomMsg}`;
+            }
+
+            document.getElementById('score-counter').innerText = `الدرجة: ${score}`;
+            document.getElementById('next-btn-container').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+
+            const total = questions.length;
+            const percentage = Math.round((score / total) * 100);
+
+            document.getElementById('res-student-name').innerText = studentData.name;
+            document.getElementById('res-score').innerText = score;
+            document.getElementById('res-total').innerText = total;
+            document.getElementById('res-correct').innerText = score;
+            document.getElementById('res-wrong').innerText = total - score;
+            
+            const circle = document.getElementById('score-circle');
+            const pctText = document.getElementById('score-percentage');
+            
+            // تحريك النسبة المئوية الدائرية
+            let currentPct = 0;
+            let interval = setInterval(() => {
+                if(currentPct >= percentage) {
+                    clearInterval(interval);
+                } else {
+                    currentPct++;
+                    pctText.innerText = `${currentPct}%`;
+                    circle.style.background = `conic-gradient(var(--accent) ${currentPct * 3.6}deg, #e1e8ed 0deg)`;
+                }
+            }, 20);
+
+            // رسالة التقييم
+            let evalMsg = "";
+            if(percentage >= 90) evalMsg = "🔥 مستوى رائع جدًا! أنت بطل حقيقي ومستر يوسف فخور بيك.";
+            else if(percentage >= 80) evalMsg = "👏 ممتاز جدًا! مستواك قوي وتستحق التحية.";
+            else if(percentage >= 70) evalMsg = "💪 شغل ممتاز، لكن عندك بعض النقاط محتاجة مراجعة.";
+            else if(percentage >= 50) evalMsg = "📚 بداية جيدة، راجع النقاط التي أخطأت فيها وحاول مرة أخرى.";
+            else evalMsg = "💡 متقلقش! الغرض من الاختبار إننا نتعلم. راجع الدرس وجرب مرة أخرى يا بطل.";
+
+            document.getElementById('res-message').innerText = evalMsg;
+
+            if(percentage >= 80) {
+                setTimeout(() => {
+                    confetti({ particleCount: 200, spread: 100, origin: { y: 0.3 } });
+                }, 500);
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            
+            document.getElementById('result-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            
+            loadQuestion();
+        }
+
+        function showReview() {
+            document.getElementById('result-screen').classList.remove('active');
+            document.getElementById('review-screen').classList.add('active');
+
+            const list = document.getElementById('review-list');
+            list.innerHTML = '';
+
+            userAnswers.forEach((ansData, idx) => {
+                const item = document.createElement('div');
+                item.className = `review-item ${ansData.isCorrect ? 'correct' : 'incorrect'}`;
+                
+                const qText = `<div class="review-q">${idx + 1}. ${ansData.question}</div>`;
+                
+                let answersHTML = '';
+                if(ansData.isCorrect) {
+                    answersHTML = `<div class="review-ans user-correct"><i class="fa-solid fa-check"></i> إجابتك: <span>${ansData.options[ansData.userChoiceIndex]}</span></div>`;
+                } else {
+                    answersHTML = `
+                        <div class="review-ans user-wrong"><i class="fa-solid fa-xmark"></i> إجابتك: <span>${ansData.options[ansData.userChoiceIndex]}</span></div>
+                        <div class="review-ans real-correct"><i class="fa-solid fa-check"></i> الإجابة الصحيحة: <span>${ansData.options[ansData.correctChoiceIndex]}</span></div>
+                    `;
+                }
+
+                item.innerHTML = qText + answersHTML;
+                list.appendChild(item);
+            });
+        }
+
+        function backToResult() {
+            document.getElementById('review-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+        }
+
+        function shareResult() {
+            const percentage = Math.round((score / questions.length) * 100);
+            const textToShare = `🎯 خلصت اختبار اللغة العربية مع مستر [أ/ يوسف البارع]!\nحصلت على ${percentage}% (${score}/${questions.length}) 🔥\nالتفوق خطوة ........ ابدأها مع البارع`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'نتيجتي في اختبار اللغة العربية',
+                    text: textToShare
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(textToShare).then(() => {
+                    alert("تم نسخ نتيجتك، يمكنك الآن مشاركتها مع أصدقائك! 🚀");
+                });
+            }
+        }
+    </script>
+</body>
+</html>
